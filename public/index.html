@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#6366f1">
+    <title>Quiz Master - Test Your Programming Knowledge</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+    <div class="landing-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>🎯 Quiz Master</h1>
+            </div>
+            <div class="nav-links">
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Master Your Programming Skills</h1>
+                <p class="hero-subtitle">Test your knowledge across 11 programming languages and technologies</p>
+                <div class="hero-buttons">
+                    <a href="register.html" class="btn btn-large btn-primary">Get Started</a>
+                    <button onclick="guestLogin()" class="btn btn-large btn-secondary">Try as Guest</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="floating-card">💻</div>
+                <div class="floating-card">🐍</div>
+                <div class="floating-card">⚛️</div>
+                <div class="floating-card">☕</div>
+                <div class="floating-card">🟢</div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Why Choose Quiz Master?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>11 Topics</h3>
+                    <p>HTML, CSS, JavaScript, PHP, Node.js, React, C, C++, Python, Java, MySQL</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎲</div>
+                    <h3>Random Questions</h3>
+                    <p>20 unique, non-repeating questions per quiz</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your scores and improvement over time</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👻</div>
+                    <h3>Guest Mode</h3>
+                    <p>Try quizzes without creating an account</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="topics-preview">
+            <h2>Available Topics</h2>
+            <div class="topics-grid">
+                <div class="topic-badge">📄 HTML</div>
+                <div class="topic-badge">🎨 CSS</div>
+                <div class="topic-badge">⚡ JavaScript</div>
+                <div class="topic-badge">🐘 PHP</div>
+                <div class="topic-badge">🟢 Node.js</div>
+                <div class="topic-badge">⚛️ React</div>
+                <div class="topic-badge">©️ C</div>
+                <div class="topic-badge">➕ C++</div>
+                <div class="topic-badge">🐍 Python</div>
+                <div class="topic-badge">☕ Java</div>
+                <div class="topic-badge">🗄️ MySQL</div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2026 Quiz Master. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/mobile.js"></script>
+    <script>
+        async function guestLogin() {
+            try {
+                const response = await fetch(API_URL + '/auth/guest', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify({ role: 'guest', sessionId: data.sessionId }));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Failed to create guest session');
+                }
+            } catch (error) {
+                console.error('Guest login error:', error);
+                alert('Failed to create guest session');
+            }
+        }
+    </script>
+</body>
+</html>

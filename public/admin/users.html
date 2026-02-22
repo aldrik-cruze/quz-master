@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1f2937">
+    <title>Manage Users - Quiz Master</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div>
+                    <h2>🎯 Quiz Master</h2>
+                    <p>Admin Panel</p>
+                </div>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display: none;">☰</button>
+            </div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="users.html" class="nav-item active">
+                    <span>👥</span> Users
+                </a>
+                <a href="questions.html" class="nav-item">
+                    <span>📝</span> Questions
+                </a>
+                <a href="../dashboard.html" class="nav-item">
+                    <span>🏠</span> Back to Site
+                </a>
+                <div class="sidebar-footer">
+                    <button onclick="logout()" class="btn btn-secondary btn-block">Logout</button>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Manage Users</h1>
+                <div id="adminInfo" class="admin-info"></div>
+            </div>
+
+            <div class="admin-section">
+                <div id="usersTable" class="table-container">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/mobile.js"></script>
+    <script>
+        async function loadUsers() {
+            try {
+                await verifyAdmin();
+
+                const response = await fetchWithAuth('/admin/users');
+                const data = await response.json();
+
+                const container = document.getElementById('usersTable');
+
+                if (data.users.length === 0) {
+                    container.innerHTML = '<p class="no-data">No users found</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Quizzes Taken</th>
+                                <th>Avg Score</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.users.map(user => `
+                                <tr>
+                                    <td>${user.id}</td>
+                                    <td>${user.username}</td>
+                                    <td>${user.email}</td>
+                                    <td><span class="badge ${user.role === 'admin' ? 'badge-primary' : 'badge-info'}">${user.role}</span></td>
+                                    <td>${user.stats.total_quizzes || 0}</td>
+                                    <td>${user.stats.avg_score ? parseFloat(user.stats.avg_score).toFixed(1) : 'N/A'}</td>
+                                    <td>
+                                        <span class="badge ${user.is_active ? 'badge-success' : 'badge-danger'}">
+                                            ${user.is_active ? 'Active' : 'Disabled'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        ${user.role !== 'admin' ? `
+                                            <button onclick="toggleUserStatus(${user.id}, ${user.is_active})" 
+                                                    class="btn btn-small ${user.is_active ? 'btn-danger' : 'btn-success'}">
+                                                ${user.is_active ? 'Disable' : 'Enable'}
+                                            </button>
+                                        ` : '<span class="text-muted">Admin</span>'}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading users:', error);
+                alert('Failed to load users');
+            }
+        }
+
+        async function toggleUserStatus(userId, currentStatus) {
+            const action = currentStatus ? 'disable' : 'enable';
+            if (!confirm(`Are you sure you want to ${action} this user?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ isActive: !currentStatus })
+                });
+
+                if (response.ok) {
+                    alert('User status updated successfully');
+                    loadUsers();
+                } else {
+                    alert('Failed to update user status');
+                }
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                alert('Failed to update user status');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.getElementById('sidebarNav');
+            nav.classList.toggle('mobile-active');
+        }
+
+        // Close menu when clicking a nav item on mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        const nav = document.getElementById('sidebarNav');
+                        nav.classList.remove('mobile-active');
+                    }
+                });
+            });
+        });
+
+        loadUsers();
+    </script>
+</body>
+</html>

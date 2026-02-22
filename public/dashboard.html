@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#6366f1">
+    <title>Dashboard - Quiz Master</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>🎯 Quiz Master</h1>
+            </div>
+            <div class="nav-links">
+                <span id="userInfo" class="user-info"></span>
+                <a href="#" id="historyLink" class="btn btn-outline">History</a>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-content">
+            <div class="welcome-section">
+                <h1>Choose Your Topic</h1>
+                <p>Select a topic to start your 20-question quiz</p>
+            </div>
+
+            <div id="topicsGrid" class="topics-grid-large">
+                <!-- Topics will be loaded here -->
+            </div>
+
+            <div id="historySection" class="history-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Quiz History</h2>
+                    <button onclick="showTopics()" class="btn btn-outline">Back to Topics</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <!-- History will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/mobile.js"></script>
+    <script>
+        let currentUser = null;
+
+        async function init() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth('/auth/verify');
+                const data = await response.json();
+                
+                if (!data.valid) {
+                    logout();
+                    return;
+                }
+
+                currentUser = data.user;
+                document.getElementById('userInfo').textContent = 
+                    currentUser.role === 'guest' ? '👻 Guest Mode' : `👤 ${currentUser.username}`;
+
+                // Show admin link if user is admin
+                if (currentUser.role === 'admin') {
+                    const adminLink = document.createElement('a');
+                    adminLink.href = 'admin/dashboard.html';
+                    adminLink.className = 'btn btn-primary';
+                    adminLink.textContent = 'Admin Panel';
+                    adminLink.style.marginRight = '10px';
+                    document.getElementById('historyLink').before(adminLink);
+                }
+
+                await loadTopics();
+            } catch (error) {
+                console.error('Init error:', error);
+                logout();
+            }
+        }
+
+        async function loadTopics() {
+            try {
+                const response = await fetch(API_URL + '/quiz/topics');
+                const data = await response.json();
+
+                const grid = document.getElementById('topicsGrid');
+                grid.innerHTML = data.topics.map(topic => `
+                    <div class="topic-card-large" onclick="startQuiz(${topic.id}, '${topic.name}')">
+                        <div class="topic-icon">${topic.icon}</div>
+                        <h3>${topic.name}</h3>
+                        <p>${topic.description}</p>
+                        <div class="topic-stats">
+                            <span>📝 ${topic.question_count} questions</span>
+                        </div>
+                        <button class="btn btn-primary">Start Quiz</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading topics:', error);
+            }
+        }
+
+        function startQuiz(topicId, topicName) {
+            localStorage.setItem('currentTopic', JSON.stringify({ id: topicId, name: topicName }));
+            window.location.href = 'quiz.html';
+        }
+
+        document.getElementById('historyLink').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await loadHistory();
+        });
+
+        async function loadHistory() {
+            try {
+                const response = await fetchWithAuth('/quiz/history');
+                const data = await response.json();
+
+                document.querySelector('.topics-grid-large').style.display = 'none';
+                document.querySelector('.welcome-section').style.display = 'none';
+                document.getElementById('historySection').style.display = 'block';
+
+                const historyList = document.getElementById('historyList');
+                
+                if (data.history.length === 0) {
+                    historyList.innerHTML = '<p class="no-data">No quiz history yet. Take a quiz to see your results here!</p>';
+                    return;
+                }
+
+                historyList.innerHTML = data.history.map(attempt => {
+                    const percentage = ((attempt.score / attempt.total_questions) * 100).toFixed(0);
+                    const date = new Date(attempt.completed_at).toLocaleDateString();
+                    return `
+                        <div class="history-item">
+                            <div class="history-topic">${attempt.topic_name}</div>
+                            <div class="history-score ${percentage >= 70 ? 'good' : percentage >= 50 ? 'average' : 'poor'}">
+                                ${attempt.score}/${attempt.total_questions}
+                            </div>
+                            <div class="history-percentage">${percentage}%</div>
+                            <div class="history-date">${date}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        function showTopics() {
+            document.getElementById('historySection').style.display = 'none';
+            document.querySelector('.welcome-section').style.display = 'block';
+            document.querySelector('.topics-grid-large').style.display = 'grid';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

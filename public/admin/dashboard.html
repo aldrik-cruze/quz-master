@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1f2937">
+    <title>Admin Dashboard - Quiz Master</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div>
+                    <h2>🎯 Quiz Master</h2>
+                    <p>Admin Panel</p>
+                </div>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display: none;">☰</button>
+            </div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="dashboard.html" class="nav-item active">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="users.html" class="nav-item">
+                    <span>👥</span> Users
+                </a>
+                <a href="questions.html" class="nav-item">
+                    <span>📝</span> Questions
+                </a>
+                <a href="../dashboard.html" class="nav-item">
+                    <span>🏠</span> Back to Site
+                </a>
+                <div class="sidebar-footer">
+                    <button onclick="logout()" class="btn btn-secondary btn-block">Logout</button>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Dashboard</h1>
+                <div id="adminInfo" class="admin-info"></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Users</div>
+                        <div id="totalUsers" class="stat-value">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Questions</div>
+                        <div id="totalQuestions" class="stat-value">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Quiz Attempts</div>
+                        <div id="totalAttempts" class="stat-value">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Average Score</div>
+                        <div id="avgScore" class="stat-value">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2>Recent Quiz Attempts</h2>
+                <div id="recentAttempts" class="table-container">
+                    <!-- Recent attempts will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/mobile.js"></script>
+    <script>
+        async function loadDashboard() {
+            try {
+                // Verify admin access
+                await verifyAdmin();
+
+                // Load statistics
+                const response = await fetchWithAuth('/admin/statistics');
+                const stats = await response.json();
+
+                document.getElementById('totalUsers').textContent = stats.totalUsers;
+                document.getElementById('totalQuestions').textContent = stats.totalQuestions;
+                document.getElementById('totalAttempts').textContent = stats.totalAttempts;
+                document.getElementById('avgScore').textContent = stats.averageScore + '%';
+
+                // Load recent attempts
+                const attemptsResponse = await fetchWithAuth('/admin/attempts');
+                const attemptsData = await attemptsResponse.json();
+
+                const recentAttempts = attemptsData.attempts.slice(0, 10);
+                const container = document.getElementById('recentAttempts');
+
+                if (recentAttempts.length === 0) {
+                    container.innerHTML = '<p class="no-data">No quiz attempts yet</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Topic</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${recentAttempts.map(attempt => {
+                                const percentage = ((attempt.score / attempt.total_questions) * 100).toFixed(0);
+                                const date = new Date(attempt.completed_at).toLocaleString();
+                                return `
+                                    <tr>
+                                        <td>${attempt.username || 'Guest'}</td>
+                                        <td>${attempt.topic_name}</td>
+                                        <td>${attempt.score}/${attempt.total_questions}</td>
+                                        <td><span class="badge ${percentage >= 70 ? 'badge-success' : percentage >= 50 ? 'badge-warning' : 'badge-danger'}">${percentage}%</span></td>
+                                        <td>${date}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                alert('Failed to load dashboard');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.getElementById('sidebarNav');
+            nav.classList.toggle('mobile-active');
+        }
+
+        // Close menu when clicking a nav item on mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        const nav = document.getElementById('sidebarNav');
+                        nav.classList.remove('mobile-active');
+                    }
+                });
+            });
+        });
+
+        loadDashboard();
+    </script>
+</body>
+</html>

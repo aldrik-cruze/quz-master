@@ -1,0 +1,941 @@
+/* Mobile Optimizations for Android 9-17 and iOS */
+
+/* 
+ * This CSS file contains mobile-specific optimizations
+ * Tested for Android 9 (API 28) to Android 17 (API 33+)
+ * Also optimized for iOS Safari
+ */
+
+/* ============================================
+   GENERAL MOBILE FIXES
+   ============================================ */
+
+/* Prevent zoom on input focus (iOS) */
+@media screen and (max-width: 768px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px !important; /* Prevents iOS zoom */
+    }
+}
+
+/* Improve touch targets - minimum 44x44px for accessibility */
+@media screen and (max-width: 768px) {
+    .btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 0.875rem 1.75rem;
+        font-size: 1.05rem;
+    }
+
+    .btn-small {
+        min-height: 44px;
+        padding: 0.75rem 1.25rem;
+    }
+}
+
+/* Fix for Android Chrome sticky hover states */
+.btn:hover,
+.option-card:hover,
+.topic-card-large:hover,
+.nav-item:hover {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove tap highlight on all interactive elements */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+a, button, input, select, textarea {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth scrolling for mobile */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Fix for viewport height on mobile browsers (address bar issue) */
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}
+
+html {
+    height: -webkit-fill-available;
+}
+
+/* ============================================
+   MOBILE NAVIGATION
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .nav-brand h1 {
+        font-size: 1.3rem;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .user-info {
+        margin-right: 0;
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================
+   LANDING PAGE MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .hero {
+        padding: 2rem 1rem;
+        gap: 2rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .features {
+        padding: 2rem 1rem;
+    }
+
+    .feature-grid {
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem;
+    }
+
+    .topics-preview {
+        padding: 2rem 1rem;
+    }
+
+    .topics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .topic-badge {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* ============================================
+   AUTH PAGES MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+
+    .auth-box {
+        padding: 2rem 1.5rem;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .auth-header h1 {
+        font-size: 2rem;
+    }
+
+    .auth-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-group input {
+        font-size: 16px; /* Prevents iOS zoom */
+        padding: 0.875rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .auth-box {
+        padding: 1.5rem 1rem;
+    }
+
+    .auth-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .auth-header h2 {
+        font-size: 1.3rem;
+    }
+}
+
+/* ============================================
+   DASHBOARD MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .dashboard-content {
+        padding: 1rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 2rem;
+    }
+
+    .welcome-section p {
+        font-size: 1.1rem;
+    }
+
+    .topics-grid-large {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .topic-card-large {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 280px;
+    }
+
+    .topic-card-large p {
+        flex-grow: 1;
+    }
+
+    .topic-card-large .btn {
+        margin-top: auto;
+    }
+
+    .topic-icon {
+        font-size: 3rem;
+    }
+
+    .topic-card-large h3 {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .welcome-section h1 {
+        font-size: 1.75rem;
+    }
+
+    .topic-card-large {
+        padding: 1.25rem;
+        min-height: 260px;
+    }
+
+    .topic-icon {
+        font-size: 2.5rem;
+    }
+
+    .topic-card-large h3 {
+        font-size: 1.3rem;
+    }
+}
+
+/* ============================================
+   QUIZ PAGE MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .quiz-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .quiz-info h2 {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .quiz-progress {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .progress-bar {
+        width: 100%;
+    }
+
+    .quiz-content {
+        padding: 1rem;
+    }
+
+    .question-card {
+        padding: 1.5rem;
+    }
+
+    .question-text {
+        font-size: 1.3rem;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr;
+        gap: 0.875rem;
+    }
+
+    .option-card {
+        padding: 1.25rem;
+        /* Improve touch response */
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Active state for better touch feedback */
+    .option-card:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+
+    .option-letter {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+
+    .option-text {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+
+    .quiz-navigation {
+        flex-direction: column;
+        gap: 0.875rem;
+    }
+
+    .quiz-navigation .btn {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .question-card {
+        padding: 1.25rem;
+    }
+
+    .question-text {
+        font-size: 1.15rem;
+    }
+
+    .option-card {
+        padding: 1rem;
+    }
+
+    .option-letter {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .option-text {
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================
+   RESULTS PAGE MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .results-container {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+
+    .results-card {
+        padding: 2rem 1.5rem;
+        max-width: 100%;
+        border-radius: 20px;
+        margin: 1rem 0;
+    }
+
+    .results-container {
+        padding: 1rem;
+        align-items: flex-start;
+    }
+
+    .score-emoji {
+        font-size: 4rem;
+        padding: 1.5rem;
+    }
+
+    .results-header h1 {
+        font-size: 2rem;
+    }
+
+    .results-header p {
+        font-size: 1.1rem;
+    }
+
+    .score-circle svg {
+        width: 180px;
+        height: 180px;
+    }
+
+    .score-percentage {
+        font-size: 2.5rem;
+    }
+
+    .score-ratio {
+        font-size: 1.1rem;
+    }
+
+    .results-breakdown {
+        gap: 0.875rem;
+        flex-direction: column;
+    }
+
+    .breakdown-item {
+        padding: 1.25rem;
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    .breakdown-value {
+        font-size: 1.75rem;
+    }
+
+    .results-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .results-actions .btn,
+    .results-actions a {
+        width: 100%;
+        max-width: none;
+        text-align: center;
+        padding: 1rem;
+        font-size: 1.1rem;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Answer Review Mobile */
+    .answer-review-section {
+        margin: 2rem 0 1.5rem 0;
+    }
+
+    .answer-review-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .answer-review-list {
+        max-height: 500px;
+    }
+
+    .answer-item {
+        padding: 1.25rem;
+    }
+
+    .answer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .answer-status {
+        align-self: flex-end;
+    }
+
+    .answer-question {
+        font-size: 1rem;
+    }
+
+    .answer-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+
+    .answer-row strong {
+        min-width: auto;
+        font-size: 0.95rem;
+    }
+
+    .answer-option {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 0.85rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .results-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .score-emoji {
+        font-size: 3.5rem;
+        padding: 1.25rem;
+    }
+
+    .results-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .score-circle svg {
+        width: 160px;
+        height: 160px;
+    }
+
+    .score-percentage {
+        font-size: 2.25rem;
+    }
+
+    .results-actions {
+        gap: 0.875rem;
+    }
+
+    .results-actions .btn,
+    .results-actions a {
+        padding: 0.875rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+
+    .answer-review-list {
+        max-height: 400px;
+    }
+
+    .answer-item {
+        padding: 1rem;
+    }
+
+    .answer-question {
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================================
+   HISTORY SECTION MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .history-section {
+        padding: 1.5rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .history-item {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 1.25rem;
+        text-align: center;
+    }
+
+    .history-topic {
+        font-size: 1.05rem;
+    }
+
+    .history-score {
+        font-size: 1.1rem;
+        justify-self: center;
+    }
+
+    .history-percentage {
+        font-size: 1.3rem;
+    }
+
+    .history-date {
+        text-align: center;
+        font-size: 0.9rem;
+    }
+}
+
+/* ============================================
+   ADMIN PANEL MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .sidebar-header p {
+        display: none;
+    }
+
+    /* Mobile menu toggle button */
+    .mobile-menu-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar-nav {
+        display: none;
+        flex-direction: column;
+        padding: 0;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+        background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    }
+
+    .sidebar-nav.mobile-active {
+        display: flex !important;
+    }
+
+    .nav-item {
+        padding: 1rem;
+        border-left: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .nav-item.active {
+        border-left: 4px solid white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item span {
+        font-size: 1.3rem;
+    }
+
+    .sidebar-footer {
+        display: block !important;
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    }
+
+    .admin-main {
+        padding: 1rem;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .admin-header h1 {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        padding: 0.875rem;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+    }
+
+    .admin-section {
+        padding: 1.5rem;
+        overflow-x: auto;
+    }
+
+    .admin-table {
+        font-size: 0.85rem;
+        min-width: 600px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .modal-form {
+        padding: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .admin-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .admin-table {
+        font-size: 0.8rem;
+    }
+}
+
+/* ============================================
+   FORM ELEMENTS MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+        font-size: 16px !important; /* Prevents iOS auto-zoom */
+        padding: 0.875rem;
+        border-radius: 8px;
+    }
+
+    /* Better focus states for mobile */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-width: 3px;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+}
+
+/* ============================================
+   ANDROID SPECIFIC FIXES
+   ============================================ */
+
+/* Fix for Android Chrome scroll issues */
+@supports (-webkit-appearance: none) {
+    body {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Fix for Android viewport height */
+@media screen and (max-width: 768px) {
+    .landing-container,
+    .auth-container,
+    .dashboard-container,
+    .quiz-container,
+    .results-container {
+        min-height: 100vh;
+        min-height: calc(var(--vh, 1vh) * 100);
+    }
+}
+
+/* ============================================
+   IOS SPECIFIC FIXES
+   ============================================ */
+
+/* Fix for iOS Safari bottom bar */
+@supports (-webkit-touch-callout: none) {
+    .landing-container,
+    .auth-container,
+    .dashboard-container,
+    .quiz-container,
+    .results-container {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Prevent iOS text size adjust */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* ============================================
+   LOADING STATES MOBILE
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border-width: 5px;
+    }
+
+    .quiz-loading p {
+        font-size: 1.1rem;
+        margin-top: 1.25rem;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+/* Larger tap targets for better accessibility */
+@media (max-width: 768px) {
+    a,
+    button,
+    input[type="submit"],
+    input[type="button"] {
+        min-height: 44px;
+    }
+
+    /* Increase spacing between interactive elements */
+    .btn + .btn,
+    a + a,
+    button + button {
+        margin-top: 0.5rem;
+    }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Use hardware acceleration for animations */
+.option-card,
+.topic-card-large,
+.feature-card,
+.btn {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+}
+
+/* Optimize scrolling performance */
+.answer-review-list,
+.history-list,
+.sidebar-nav {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+}
+
+/* Reduce animations on mobile to improve performance */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   LANDSCAPE MODE MOBILE
+   ============================================ */
+
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .hero {
+        padding: 1.5rem 1rem;
+    }
+
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .auth-box {
+        margin: 1rem 0;
+    }
+
+    .question-card {
+        padding: 1rem;
+    }
+
+    .quiz-header {
+        padding: 0.75rem;
+    }
+
+    .results-card {
+        padding: 1.5rem;
+    }
+
+    .score-circle svg {
+        width: 150px;
+        height: 150px;
+    }
+}

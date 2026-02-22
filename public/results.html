@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#6366f1">
+    <title>Results - Quiz Master</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+    <div class="results-container">
+        <div class="results-card">
+            <div class="results-header">
+                <div id="scoreEmoji" class="score-emoji">🎉</div>
+                <h1>Quiz Complete!</h1>
+                <p id="topicName">Topic</p>
+            </div>
+
+            <div class="results-score">
+                <div class="score-circle">
+                    <svg width="200" height="200">
+                        <circle cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                        <circle id="scoreCircle" cx="100" cy="100" r="90" fill="none" stroke="#4CAF50" 
+                                stroke-width="20" stroke-dasharray="565.48" stroke-dashoffset="565.48"
+                                transform="rotate(-90 100 100)" style="transition: stroke-dashoffset 1s ease"/>
+                    </svg>
+                    <div class="score-text">
+                        <div id="scorePercentage" class="score-percentage">0%</div>
+                        <div id="scoreRatio" class="score-ratio">0/20</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-breakdown">
+                <div class="breakdown-item correct">
+                    <span class="breakdown-label">✓ Correct</span>
+                    <span id="correctCount" class="breakdown-value">0</span>
+                </div>
+                <div class="breakdown-item incorrect">
+                    <span class="breakdown-label">✗ Incorrect</span>
+                    <span id="incorrectCount" class="breakdown-value">0</span>
+                </div>
+            </div>
+
+            <div class="results-message" id="resultsMessage">
+                <!-- Message will be inserted here -->
+            </div>
+
+            <div class="answer-review-section">
+                <h2>📝 Answer Review</h2>
+                <div id="answerReview" class="answer-review-list">
+                    <!-- Detailed answers will be shown here -->
+                </div>
+            </div>
+
+            <div class="results-actions">
+                <button onclick="retakeQuiz()" class="btn btn-primary">🔄 Retake Quiz</button>
+                <a href="dashboard.html" class="btn btn-secondary">🏠 Dashboard</a>
+                <button onclick="exitQuiz()" class="btn btn-outline">✖️ Exit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/mobile.js"></script>
+    <script>
+        async function init() {
+            const resultsData = JSON.parse(localStorage.getItem('quizResults'));
+            const topic = JSON.parse(localStorage.getItem('currentTopic'));
+
+            if (!resultsData || !topic) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Display topic
+            document.getElementById('topicName').textContent = topic.name;
+
+            // Calculate scores
+            const score = resultsData.score;
+            const total = resultsData.totalQuestions;
+            const percentage = parseFloat(resultsData.percentage);
+            const incorrect = total - score;
+
+            // Update score display
+            document.getElementById('scorePercentage').textContent = percentage.toFixed(0) + '%';
+            document.getElementById('scoreRatio').textContent = `${score}/${total}`;
+            document.getElementById('correctCount').textContent = score;
+            document.getElementById('incorrectCount').textContent = incorrect;
+
+            // Animate score circle
+            const circumference = 2 * Math.PI * 90;
+            const offset = circumference - (percentage / 100) * circumference;
+            setTimeout(() => {
+                document.getElementById('scoreCircle').style.strokeDashoffset = offset;
+            }, 100);
+
+            // Update emoji and message based on score
+            let emoji, message, color;
+            if (percentage >= 90) {
+                emoji = '🏆';
+                message = 'Outstanding! You\'re a master!';
+                color = '#FFD700';
+            } else if (percentage >= 70) {
+                emoji = '🎉';
+                message = 'Great job! Well done!';
+                color = '#4CAF50';
+            } else if (percentage >= 50) {
+                emoji = '👍';
+                message = 'Good effort! Keep practicing!';
+                color = '#2196F3';
+            } else {
+                emoji = '💪';
+                message = 'Keep trying! You\'ll improve!';
+                color = '#FF9800';
+            }
+
+            document.getElementById('scoreEmoji').textContent = emoji;
+            document.getElementById('scoreEmoji').style.background = 
+                `linear-gradient(135deg, ${color}22, ${color}44)`;
+            document.getElementById('resultsMessage').innerHTML = `<h3>${message}</h3>`;
+            document.getElementById('scoreCircle').style.stroke = color;
+
+            // Display detailed answer review
+            displayAnswerReview(resultsData.results);
+
+            // Clear results from localStorage
+            localStorage.removeItem('quizResults');
+        }
+
+        function displayAnswerReview(results) {
+            const reviewContainer = document.getElementById('answerReview');
+            
+            if (!results || results.length === 0) {
+                reviewContainer.innerHTML = '<p class="no-data">No answer details available</p>';
+                return;
+            }
+
+            reviewContainer.innerHTML = results.map((result, index) => {
+                const userAnswerText = result.userAnswer ? result.options[result.userAnswer] : 'Not answered';
+                const correctAnswerText = result.options[result.correctAnswer];
+                
+                return `
+                    <div class="answer-item ${result.isCorrect ? 'correct-answer' : 'wrong-answer'}">
+                        <div class="answer-header">
+                            <span class="question-number">Question ${index + 1}</span>
+                            <span class="answer-status">
+                                ${result.isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                            </span>
+                        </div>
+                        <div class="answer-question">
+                            ${result.questionText}
+                        </div>
+                        <div class="answer-details">
+                            <div class="answer-row ${result.isCorrect ? '' : 'user-wrong'}">
+                                <strong>Your Answer:</strong> 
+                                <span class="answer-option">${result.userAnswer ? result.userAnswer.toUpperCase() : 'N/A'}</span>
+                                ${userAnswerText}
+                            </div>
+                            ${!result.isCorrect ? `
+                                <div class="answer-row correct-row">
+                                    <strong>Correct Answer:</strong> 
+                                    <span class="answer-option correct">${result.correctAnswer.toUpperCase()}</span>
+                                    ${correctAnswerText}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function retakeQuiz() {
+            window.location.href = 'quiz.html';
+        }
+
+        function exitQuiz() {
+            // Clear quiz data
+            localStorage.removeItem('quizResults');
+            localStorage.removeItem('currentTopic');
+            localStorage.removeItem('currentQuiz');
+            // Return to dashboard
+            window.location.href = 'dashboard.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

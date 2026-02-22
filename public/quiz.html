@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#6366f1">
+    <title>Quiz - Quiz Master</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/quiz.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <div class="quiz-info">
+                <h2 id="topicName">Loading...</h2>
+                <div class="quiz-progress">
+                    <span id="questionNumber">Question 1/20</span>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="confirmExit()" class="btn btn-secondary">Exit Quiz</button>
+        </div>
+
+        <div class="quiz-content" id="quizContent">
+            <div class="question-card">
+                <div class="question-text" id="questionText">Loading question...</div>
+                <div class="options-grid" id="optionsGrid">
+                    <!-- Options will be loaded here -->
+                </div>
+                <div class="quiz-navigation">
+                    <button id="prevBtn" onclick="previousQuestion()" class="btn btn-outline" disabled>Previous</button>
+                    <button id="nextBtn" onclick="nextQuestion()" class="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-loading" id="quizLoading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading quiz...</p>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>
